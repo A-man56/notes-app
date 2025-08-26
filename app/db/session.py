@@ -1,8 +1,16 @@
-import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+# File: app/db/session.py
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+import motor.motor_asyncio
+from beanie import init_beanie
+from ..core.config import settings
+from ..models import User, Note # Import your Beanie models
 
-engine = create_async_engine(DATABASE_URL, future=True, echo=True)
-AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async def init_db():
+    """
+    Initializes the database connection and Beanie ODM.
+    """
+    client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URL)
+    await init_beanie(
+        database=client.get_default_database(), 
+        document_models=[User, Note]
+    )

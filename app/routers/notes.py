@@ -1,37 +1,49 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from ..schemas import NoteCreate, NoteOut
-from ..deps import get_current_user, get_db
-from .. import crud
+from ..deps import get_current_user
+from .. import crud, models
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
-@router.post("", response_model=NoteOut, status_code=201)
-async def create_note(payload: NoteCreate, db=Depends(get_db), user=Depends(get_current_user)):
-    note = await crud.create_note(db, user.id, payload.title, payload.content)
+@router.post("", response_model=NoteOut, status_code=status.HTTP_201_CREATED)
+async def create_note_endpoint(
+    payload: NoteCreate, user: models.User = Depends(get_current_user)
+):
+    note = await crud.create_note(str(user.id), payload)
     return note
 
 @router.get("", response_model=list[NoteOut])
-async def list_notes(db=Depends(get_db), user=Depends(get_current_user)):
-    return await crud.get_notes_for_user(db, user.id)
+async def list_notes_endpoint(user: models.User = Depends(get_current_user)):
+    return await crud.get_notes_for_user(str(user.id))
 
 @router.get("/{note_id}", response_model=NoteOut)
-async def get_note(note_id: int, db=Depends(get_db), user=Depends(get_current_user)):
-    note = await crud.get_note_by_id(db, note_id, user.id)
+async def get_note_endpoint(note_id: str, user: models.User = Depends(get_current_user)):
+    note = await crud.get_note_by_id(note_id, str(user.id))
     if not note:
-        raise HTTPException(404, "Not found")
+        raise HTTPException(status_code=404, detail="Note not found")
     return note
 
-# Update with client-provided version for optimistic locking:
 @router.put("/{note_id}", response_model=NoteOut)
-async def update_note(note_id: int, payload: NoteCreate, version: int, db=Depends(get_db), user=Depends(get_current_user)):
-    updated = await crud.update_note_with_version(db, note_id, user.id, payload.title, payload.content, version)
-    if updated is None:
-        raise HTTPException(status_code=409, detail="Note was modified by another process")
-    return updated
+async def update_note_endpoint(
+    note_id: str,
+    payload: NoteCreate,
+    version: int = Query(..., description="The version of the note you are updating."),
+    user: models.User = Depends(get_current_user)
+):
+    updated_note = await crud.update_note_with_version(
+        note_id, str(user.id), payload.title, payload.content, version
+    )
+    if updated_note is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Conflict: The note was modified by another process. Please refetch and try again.",
+        )
+    return updated_note
 
-@router.delete("/{note_id}")
-async def delete_note(note_id: int, db=Depends(get_db), user=Depends(get_current_user)):
-    count = await crud.delete_note(db, note_id, user.id)
-    if not count:
-        raise HTTPException(404, "Not found")
-    return {"message": "Note deleted"}
+@router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_note_endpoint(note_id: str, user: models.User = Depends(get_current_user)):
+    deleted = await crud.delete_note(note_id, str(user.id))
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return None

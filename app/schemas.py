@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+# File: app/schemas.py
+
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -10,17 +12,22 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-class NoteCreate(BaseModel):
+class NoteBase(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
 
-class NoteOut(BaseModel):
-    id: int
-    title: Optional[str]
-    content: Optional[str]
+class NoteCreate(NoteBase):
+    pass
+
+class NoteOut(NoteBase):
+    id: str = Field(..., alias="_id")
     version: int
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+        populate_by_name = True 
+        json_encoders = {
+           
+        }

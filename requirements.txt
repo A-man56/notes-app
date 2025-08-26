@@ -1,0 +1,7 @@
+fastapi[all]
+motor
+beanie
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+pydantic-settings

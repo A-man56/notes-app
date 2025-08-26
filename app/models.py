@@ -1,22 +1,32 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, TIMESTAMP, func
-from sqlalchemy.orm import relationship, declarative_base
+# File: app/models.py
 
-Base = declarative_base()
+from beanie import Document, Indexed
+from pydantic import Field
+from typing import Optional
+from datetime import datetime
+import pymongo
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, nullable=False, index=True)
-    password_hash = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+class User(Document):
+    username: Indexed(str, unique=True)
+    password_hash: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Note(Base):
-    __tablename__ = "notes"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    title = Column(String(255))
-    content = Column(Text)
-    version = Column(Integer, nullable=False, server_default="1")
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
-    user = relationship("User", backref="notes")
+    class Settings:
+        name = "users" # MongoDB collection name
+
+class Note(Document):
+    user_id: Indexed(str)
+    title: Optional[str] = None
+    content: Optional[str] = None
+    version: int = 1
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "notes"
+        indexes = [
+            [
+                ("user_id", pymongo.ASCENDING),
+                ("created_at", pymongo.DESCENDING),
+            ]
+        ]
