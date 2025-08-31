@@ -1,24 +1,24 @@
 import nodemailer from "nodemailer"
 
 type MailConfig = {
-  host?: string
-  port?: number
-  secure?: boolean
-  user?: string
-  pass?: string
-  from?: string
+  host: string
+  port: number
+  secure: boolean
+  user: string
+  pass: string
+  from: string
 }
 
 function getMailConfig(): MailConfig {
   const port = Number(process.env.EMAIL_PORT || 587)
   const secure = String(process.env.EMAIL_SECURE || "").toLowerCase() === "true" || port === 465
   return {
-    host: process.env.EMAIL_HOST,
+    host: process.env.EMAIL_HOST ?? "",
     port,
     secure,
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    user: process.env.EMAIL_USER ?? "",
+    pass: process.env.EMAIL_PASS ?? "",
+    from: process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "",
   }
 }
 
