@@ -5,8 +5,7 @@ export function BackgroundPattern() {
     <div className="w-full h-full">
        <img src="/6931402.jpg"
         alt="Background"
-        className="w-full h-full object-cover"
-      />
+        className="w-full h-full object-cover" />
     </div>
   );
 }
