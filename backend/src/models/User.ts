@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password?: string;
   googleId?: string;
   isEmailVerified: boolean;
-   otpCode?: string | undefined;
+  otpCode?: string | undefined;
   otpExpires?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
