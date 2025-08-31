@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",                // ✅ change to CommonJS for Node
+    "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -18,8 +18,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "types": ["node"]                    
+    "exactOptionalPropertyTypes": true
+    // "types": ["node"]  <== REMOVED THIS LINE
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
