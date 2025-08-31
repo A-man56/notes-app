@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { connectDatabase } from '.config/database.js';
 
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
 
 
 // 404 handler
