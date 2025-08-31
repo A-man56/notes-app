@@ -4,7 +4,7 @@ export function BackgroundPattern() {
   return (
     <div className="w-full h-full">
       <img
-        src="../../public/6931402.jpg" // 👈 put your image path here (public folder or CDN)
+       <img src="/6931402.jpg" alt="Note" />
         alt="Background"
         className="w-full h-full object-cover"
       />
