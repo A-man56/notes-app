@@ -2,14 +2,15 @@ import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
+  _id: mongoose.Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;
   password?: string;
   googleId?: string;
   isEmailVerified: boolean;
-  otpCode?: string;
-  otpExpires?: Date;
+   otpCode?: string | undefined;
+  otpExpires?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
