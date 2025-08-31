@@ -1,6 +1,6 @@
 # Notes
 
-A simple notes app with OTP-based auth (no passwords) and optional Google sign-in. Backend: Node/Express + MongoDB (Atlas). Frontend: React (Vite).
+A simple notes app with OTP-based auth (no passwords) and (upcomming alternate) Google sign-in. Backend: Node/Express + MongoDB (Atlas). Frontend: React (Vite).
 
 ## Quick Start
 
